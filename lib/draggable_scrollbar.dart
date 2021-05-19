@@ -52,6 +52,9 @@ class DraggableScrollbar extends StatefulWidget {
   /// Determines scrollThumb displaying. If you draw own ScrollThumb and it is true you just don't need to use animation parameters in [scrollThumbBuilder]
   final bool alwaysVisibleScrollThumb;
 
+  /// Override the maxScrollExtent from ScrollController with this value
+  final double? overrideMaxScrollExtent;
+
   DraggableScrollbar({
     Key? key,
     this.alwaysVisibleScrollThumb = false,
@@ -65,6 +68,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
     this.labelTextBuilder,
     this.labelConstraints,
+    this.overrideMaxScrollExtent,
   })  : assert(controller != null),
         assert(scrollThumbBuilder != null),
         super(key: key);
@@ -82,6 +86,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
     this.labelTextBuilder,
     this.labelConstraints,
+    this.overrideMaxScrollExtent,
   })  : scrollThumbBuilder =
             _thumbRRectBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -99,6 +104,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
     this.labelTextBuilder,
     this.labelConstraints,
+    this.overrideMaxScrollExtent,
   })  : scrollThumbBuilder =
             _thumbArrowBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -116,6 +122,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
     this.labelTextBuilder,
     this.labelConstraints,
+    this.overrideMaxScrollExtent,
   })  : scrollThumbBuilder = _thumbSemicircleBuilder(
             heightScrollThumb * 0.6, scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -357,7 +364,9 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
 
   double get barMinScrollExtent => 0.0;
 
-  double get viewMaxScrollExtent => widget.controller.position.maxScrollExtent;
+  double get viewMaxScrollExtent =>
+      widget.overrideMaxScrollExtent ??
+      widget.controller.position.maxScrollExtent;
 
   double get viewMinScrollExtent => widget.controller.position.minScrollExtent;
 
