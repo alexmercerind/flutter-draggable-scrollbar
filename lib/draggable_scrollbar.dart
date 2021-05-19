@@ -419,8 +419,7 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
 
     setState(() {
       if (notification is ScrollUpdateNotification) {
-        _barOffset += getBarDelta(
-          notification.scrollDelta!,
+        _barOffset = getBarAbsolute(
           barMaxScrollExtent,
           viewMaxScrollExtent,
         );
@@ -455,6 +454,13 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
         });
       }
     });
+  }
+
+  double getBarAbsolute(
+    double barMaxScrollExtent,
+    double viewMaxScrollExtent,
+  ) {
+    return widget.controller.offset * barMaxScrollExtent / viewMaxScrollExtent;
   }
 
   double getBarDelta(
