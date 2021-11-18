@@ -55,6 +55,9 @@ class DraggableScrollbar extends StatefulWidget {
   /// Override the maxScrollExtent from ScrollController with this value
   final double? overrideMaxScrollExtent;
 
+  /// Offset the view
+  final double topOffset;
+
   DraggableScrollbar({
     Key? key,
     this.alwaysVisibleScrollThumb = false,
@@ -69,6 +72,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.labelTextBuilder,
     this.labelConstraints,
     this.overrideMaxScrollExtent,
+    this.topOffset = 0,
   })  : assert(controller != null),
         assert(scrollThumbBuilder != null),
         super(key: key);
@@ -87,6 +91,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.labelTextBuilder,
     this.labelConstraints,
     this.overrideMaxScrollExtent,
+    this.topOffset = 0,
   })  : scrollThumbBuilder =
             _thumbRRectBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -105,6 +110,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.labelTextBuilder,
     this.labelConstraints,
     this.overrideMaxScrollExtent,
+    this.topOffset = 0,
   })  : scrollThumbBuilder =
             _thumbArrowBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -123,6 +129,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.labelTextBuilder,
     this.labelConstraints,
     this.overrideMaxScrollExtent,
+    this.topOffset = 0,
   })  : scrollThumbBuilder = _thumbSemicircleBuilder(
             heightScrollThumb * 0.6, scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -360,7 +367,7 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
   }
 
   double get barMaxScrollExtent =>
-      context.size!.height - widget.heightScrollThumb;
+      context.size!.height - widget.heightScrollThumb - widget.topOffset;
 
   double get barMinScrollExtent => 0.0;
 
@@ -375,7 +382,10 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
     Text? labelText;
     if (widget.labelTextBuilder != null && _isDragInProcess) {
       labelText = widget.labelTextBuilder!(
-        _viewOffset + _barOffset + widget.heightScrollThumb / 2,
+        _viewOffset +
+            _barOffset +
+            widget.topOffset +
+            widget.heightScrollThumb / 2,
       );
     }
 
@@ -400,7 +410,7 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
               onVerticalDragEnd: _onVerticalDragEnd,
               child: Container(
                 alignment: Alignment.topRight,
-                margin: EdgeInsets.only(top: _barOffset),
+                margin: EdgeInsets.only(top: _barOffset + widget.topOffset),
                 padding: widget.padding,
                 child: widget.scrollThumbBuilder(
                   widget.backgroundColor,
