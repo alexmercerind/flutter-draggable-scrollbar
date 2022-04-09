@@ -57,6 +57,7 @@ class DraggableScrollbar extends StatefulWidget {
 
   /// Offset the view
   final double topOffset;
+  final double bottomOffset;
 
   DraggableScrollbar({
     Key? key,
@@ -73,6 +74,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.labelConstraints,
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
+    this.bottomOffset = 0,
   })  : assert(controller != null),
         assert(scrollThumbBuilder != null),
         super(key: key);
@@ -92,6 +94,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.labelConstraints,
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
+    this.bottomOffset = 0,
   })  : scrollThumbBuilder =
             _thumbRRectBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -111,6 +114,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.labelConstraints,
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
+    this.bottomOffset = 0,
   })  : scrollThumbBuilder =
             _thumbArrowBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -130,6 +134,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.labelConstraints,
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
+    this.bottomOffset = 0,
   })  : scrollThumbBuilder = _thumbSemicircleBuilder(
             heightScrollThumb * 0.6, scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -367,7 +372,10 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
   }
 
   double get barMaxScrollExtent =>
-      context.size!.height - widget.heightScrollThumb - widget.topOffset;
+      context.size!.height -
+      widget.heightScrollThumb -
+      widget.topOffset -
+      widget.bottomOffset;
 
   double get barMinScrollExtent => 0.0;
 
@@ -410,7 +418,10 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
               onVerticalDragEnd: _onVerticalDragEnd,
               child: Container(
                 alignment: Alignment.topRight,
-                margin: EdgeInsets.only(top: _barOffset + widget.topOffset),
+                margin: EdgeInsets.only(
+                  top: _barOffset + widget.topOffset,
+                  bottom: widget.bottomOffset,
+                ),
                 padding: widget.padding,
                 child: widget.scrollThumbBuilder(
                   widget.backgroundColor,
