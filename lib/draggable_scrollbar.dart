@@ -8,12 +8,11 @@ typedef Widget ScrollThumbBuilder(
   Animation<double> thumbAnimation,
   Animation<double> labelAnimation,
   double height, {
-  Text? labelText,
-  BoxConstraints? labelConstraints,
+  Widget? labelText,
 });
 
 /// Build a Text widget using the current scroll offset
-typedef Text LabelTextBuilder(double offsetY);
+typedef Widget LabelTextBuilder(double offsetY);
 
 /// A widget that will display a BoxScrollView with a ScrollThumb that can be dragged
 /// for quick navigation of the BoxScrollView.
@@ -42,9 +41,6 @@ class DraggableScrollbar extends StatefulWidget {
   /// Build a Text widget from the current offset in the BoxScrollView
   final LabelTextBuilder? labelTextBuilder;
 
-  /// Determines box constraints for Container displaying label
-  final BoxConstraints? labelConstraints;
-
   /// The ScrollController for the BoxScrollView
   final ScrollController controller;
 
@@ -70,7 +66,6 @@ class DraggableScrollbar extends StatefulWidget {
     this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
     this.labelTextBuilder,
-    this.labelConstraints,
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
     this.bottomOffset = 0,
@@ -90,7 +85,6 @@ class DraggableScrollbar extends StatefulWidget {
     this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
     this.labelTextBuilder,
-    this.labelConstraints,
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
     this.bottomOffset = 0,
@@ -110,7 +104,6 @@ class DraggableScrollbar extends StatefulWidget {
     this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
     this.labelTextBuilder,
-    this.labelConstraints,
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
     this.bottomOffset = 0,
@@ -130,7 +123,6 @@ class DraggableScrollbar extends StatefulWidget {
     this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
     this.labelTextBuilder,
-    this.labelConstraints,
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
     this.bottomOffset = 0,
@@ -146,8 +138,7 @@ class DraggableScrollbar extends StatefulWidget {
       required Color backgroundColor,
       required Animation<double>? thumbAnimation,
       required Animation<double>? labelAnimation,
-      required Text? labelText,
-      required BoxConstraints? labelConstraints,
+      required Widget? labelText,
       required bool alwaysVisibleScrollThumb}) {
     var scrollThumbAndLabel = labelText == null
         ? scrollThumb
@@ -159,7 +150,6 @@ class DraggableScrollbar extends StatefulWidget {
                 animation: labelAnimation,
                 child: labelText,
                 backgroundColor: backgroundColor,
-                constraints: labelConstraints,
               ),
               scrollThumb,
             ],
@@ -181,8 +171,7 @@ class DraggableScrollbar extends StatefulWidget {
       Animation<double> thumbAnimation,
       Animation<double> labelAnimation,
       double height, {
-      Text? labelText,
-      BoxConstraints? labelConstraints,
+      Widget? labelText,
     }) {
       final scrollThumb = CustomPaint(
         key: scrollThumbKey,
@@ -208,7 +197,6 @@ class DraggableScrollbar extends StatefulWidget {
         thumbAnimation: thumbAnimation,
         labelAnimation: labelAnimation,
         labelText: labelText,
-        labelConstraints: labelConstraints,
         alwaysVisibleScrollThumb: alwaysVisibleScrollThumb,
       );
     };
@@ -221,8 +209,7 @@ class DraggableScrollbar extends StatefulWidget {
       Animation<double> thumbAnimation,
       Animation<double> labelAnimation,
       double height, {
-      Text? labelText,
-      BoxConstraints? labelConstraints,
+      Widget? labelText,
     }) {
       final scrollThumb = ClipPath(
         child: Container(
@@ -244,7 +231,6 @@ class DraggableScrollbar extends StatefulWidget {
         thumbAnimation: thumbAnimation,
         labelAnimation: labelAnimation,
         labelText: labelText,
-        labelConstraints: labelConstraints,
         alwaysVisibleScrollThumb: alwaysVisibleScrollThumb,
       );
     };
@@ -257,8 +243,7 @@ class DraggableScrollbar extends StatefulWidget {
       Animation<double> thumbAnimation,
       Animation<double> labelAnimation,
       double height, {
-      Text? labelText,
-      BoxConstraints? labelConstraints,
+      Widget? labelText,
     }) {
       final scrollThumb = Material(
         elevation: 4.0,
@@ -277,7 +262,6 @@ class DraggableScrollbar extends StatefulWidget {
         thumbAnimation: thumbAnimation,
         labelAnimation: labelAnimation,
         labelText: labelText,
-        labelConstraints: labelConstraints,
         alwaysVisibleScrollThumb: alwaysVisibleScrollThumb,
       );
     };
@@ -287,34 +271,31 @@ class DraggableScrollbar extends StatefulWidget {
 class ScrollLabel extends StatelessWidget {
   final Animation<double>? animation;
   final Color backgroundColor;
-  final Text child;
-
-  final BoxConstraints? constraints;
-  static const BoxConstraints _defaultConstraints =
-      BoxConstraints.tightFor(width: 72.0, height: 28.0);
+  final Widget child;
 
   const ScrollLabel({
     Key? key,
     required this.child,
     required this.animation,
     required this.backgroundColor,
-    this.constraints = _defaultConstraints,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: animation!,
-      child: Container(
-        margin: EdgeInsets.only(right: 12.0),
-        child: Material(
-          elevation: 4.0,
-          color: backgroundColor,
-          borderRadius: BorderRadius.all(Radius.circular(16.0)),
-          child: Container(
-            constraints: constraints ?? _defaultConstraints,
-            alignment: Alignment.center,
-            child: child,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 12.0),
+        child: Container(
+          child: Material(
+            elevation: 4.0,
+            color: backgroundColor,
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+            child: Wrap(
+              children: [
+                child,
+              ],
+            ),
           ),
         ),
       ),
@@ -386,7 +367,7 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
 
   @override
   Widget build(BuildContext context) {
-    Text? labelText;
+    Widget? labelText;
     if (widget.labelTextBuilder != null && _isDragInProcess) {
       labelText = widget.labelTextBuilder!(
         _viewOffset +
@@ -428,7 +409,6 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
                   _labelAnimation,
                   widget.heightScrollThumb,
                   labelText: labelText,
-                  labelConstraints: widget.labelConstraints,
                 ),
               ),
             )),
