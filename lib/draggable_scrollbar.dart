@@ -9,6 +9,7 @@ typedef Widget ScrollThumbBuilder(
   Animation<double> labelAnimation,
   double height, {
   Widget? labelText,
+  required EdgeInsetsGeometry labelPadding,
 });
 
 /// Build a Text widget using the current scroll offset
@@ -54,6 +55,9 @@ class DraggableScrollbar extends StatefulWidget {
   final double topOffset;
   final double bottomOffset;
 
+  /// The amount of padding between the thumb and the label widget
+  final EdgeInsetsGeometry labelPadding;
+
   DraggableScrollbar({
     Key? key,
     this.alwaysVisibleScrollThumb = false,
@@ -69,6 +73,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
     this.bottomOffset = 0,
+    this.labelPadding = const EdgeInsets.only(right: 12.0),
   })  : assert(controller != null),
         assert(scrollThumbBuilder != null),
         super(key: key);
@@ -88,6 +93,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
     this.bottomOffset = 0,
+    this.labelPadding = const EdgeInsets.only(right: 12.0),
   })  : scrollThumbBuilder =
             _thumbRRectBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -107,6 +113,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
     this.bottomOffset = 0,
+    this.labelPadding = const EdgeInsets.only(right: 12.0),
   })  : scrollThumbBuilder =
             _thumbArrowBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -126,6 +133,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.overrideMaxScrollExtent,
     this.topOffset = 0,
     this.bottomOffset = 0,
+    this.labelPadding = const EdgeInsets.only(right: 12.0),
   })  : scrollThumbBuilder = _thumbSemicircleBuilder(
             heightScrollThumb * 0.6, scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -133,13 +141,15 @@ class DraggableScrollbar extends StatefulWidget {
   @override
   _DraggableScrollbarState createState() => _DraggableScrollbarState();
 
-  static buildScrollThumbAndLabel(
-      {required Widget scrollThumb,
-      required Color backgroundColor,
-      required Animation<double>? thumbAnimation,
-      required Animation<double>? labelAnimation,
-      required Widget? labelText,
-      required bool alwaysVisibleScrollThumb}) {
+  static buildScrollThumbAndLabel({
+    required Widget scrollThumb,
+    required Color backgroundColor,
+    required Animation<double>? thumbAnimation,
+    required Animation<double>? labelAnimation,
+    required Widget? labelText,
+    required bool alwaysVisibleScrollThumb,
+    required EdgeInsetsGeometry labelPadding,
+  }) {
     var scrollThumbAndLabel = labelText == null
         ? scrollThumb
         : Row(
@@ -150,6 +160,7 @@ class DraggableScrollbar extends StatefulWidget {
                 animation: labelAnimation,
                 child: labelText,
                 backgroundColor: backgroundColor,
+                padding: labelPadding,
               ),
               scrollThumb,
             ],
@@ -172,6 +183,7 @@ class DraggableScrollbar extends StatefulWidget {
       Animation<double> labelAnimation,
       double height, {
       Widget? labelText,
+      required EdgeInsetsGeometry labelPadding,
     }) {
       final scrollThumb = CustomPaint(
         key: scrollThumbKey,
@@ -198,6 +210,7 @@ class DraggableScrollbar extends StatefulWidget {
         labelAnimation: labelAnimation,
         labelText: labelText,
         alwaysVisibleScrollThumb: alwaysVisibleScrollThumb,
+        labelPadding: labelPadding,
       );
     };
   }
@@ -210,6 +223,7 @@ class DraggableScrollbar extends StatefulWidget {
       Animation<double> labelAnimation,
       double height, {
       Widget? labelText,
+      required EdgeInsetsGeometry labelPadding,
     }) {
       final scrollThumb = ClipPath(
         child: Container(
@@ -232,6 +246,7 @@ class DraggableScrollbar extends StatefulWidget {
         labelAnimation: labelAnimation,
         labelText: labelText,
         alwaysVisibleScrollThumb: alwaysVisibleScrollThumb,
+        labelPadding: labelPadding,
       );
     };
   }
@@ -244,6 +259,7 @@ class DraggableScrollbar extends StatefulWidget {
       Animation<double> labelAnimation,
       double height, {
       Widget? labelText,
+      required EdgeInsetsGeometry labelPadding,
     }) {
       final scrollThumb = Material(
         elevation: 4.0,
@@ -263,6 +279,7 @@ class DraggableScrollbar extends StatefulWidget {
         labelAnimation: labelAnimation,
         labelText: labelText,
         alwaysVisibleScrollThumb: alwaysVisibleScrollThumb,
+        labelPadding: labelPadding,
       );
     };
   }
@@ -272,12 +289,14 @@ class ScrollLabel extends StatelessWidget {
   final Animation<double>? animation;
   final Color backgroundColor;
   final Widget child;
+  final EdgeInsetsGeometry padding;
 
   const ScrollLabel({
     Key? key,
     required this.child,
     required this.animation,
     required this.backgroundColor,
+    required this.padding,
   }) : super(key: key);
 
   @override
@@ -285,7 +304,7 @@ class ScrollLabel extends StatelessWidget {
     return FadeTransition(
       opacity: animation!,
       child: Padding(
-        padding: const EdgeInsets.only(right: 12.0),
+        padding: padding,
         child: Container(
           child: Material(
             elevation: 4.0,
@@ -409,6 +428,7 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
                   _labelAnimation,
                   widget.heightScrollThumb,
                   labelText: labelText,
+                  labelPadding: widget.labelPadding,
                 ),
               ),
             )),
