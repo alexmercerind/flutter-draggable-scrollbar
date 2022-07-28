@@ -58,6 +58,8 @@ class DraggableScrollbar extends StatefulWidget {
   /// The amount of padding between the thumb and the label widget
   final EdgeInsetsGeometry labelPadding;
 
+  final bool enabled;
+
   DraggableScrollbar({
     Key? key,
     this.alwaysVisibleScrollThumb = false,
@@ -74,6 +76,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.topOffset = 0,
     this.bottomOffset = 0,
     this.labelPadding = const EdgeInsets.only(right: 12.0),
+    this.enabled = true,
   })  : assert(controller != null),
         assert(scrollThumbBuilder != null),
         super(key: key);
@@ -94,6 +97,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.topOffset = 0,
     this.bottomOffset = 0,
     this.labelPadding = const EdgeInsets.only(right: 12.0),
+    this.enabled = true,
   })  : scrollThumbBuilder =
             _thumbRRectBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -114,6 +118,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.topOffset = 0,
     this.bottomOffset = 0,
     this.labelPadding = const EdgeInsets.only(right: 12.0),
+    this.enabled = true,
   })  : scrollThumbBuilder =
             _thumbArrowBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -134,6 +139,7 @@ class DraggableScrollbar extends StatefulWidget {
     this.topOffset = 0,
     this.bottomOffset = 0,
     this.labelPadding = const EdgeInsets.only(right: 12.0),
+    this.enabled = true,
   })  : scrollThumbBuilder = _thumbSemicircleBuilder(
             heightScrollThumb * 0.6, scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -410,28 +416,29 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
             RepaintBoundary(
               child: widget.child,
             ),
-            RepaintBoundary(
-                child: GestureDetector(
-              onVerticalDragStart: _onVerticalDragStart,
-              onVerticalDragUpdate: _onVerticalDragUpdate,
-              onVerticalDragEnd: _onVerticalDragEnd,
-              child: Container(
-                alignment: Alignment.topRight,
-                margin: EdgeInsets.only(
-                  top: _barOffset + widget.topOffset,
-                  bottom: widget.bottomOffset,
+            if (widget.enabled)
+              RepaintBoundary(
+                  child: GestureDetector(
+                onVerticalDragStart: _onVerticalDragStart,
+                onVerticalDragUpdate: _onVerticalDragUpdate,
+                onVerticalDragEnd: _onVerticalDragEnd,
+                child: Container(
+                  alignment: Alignment.topRight,
+                  margin: EdgeInsets.only(
+                    top: _barOffset + widget.topOffset,
+                    bottom: widget.bottomOffset,
+                  ),
+                  padding: widget.padding,
+                  child: widget.scrollThumbBuilder(
+                    widget.backgroundColor,
+                    _thumbAnimation,
+                    _labelAnimation,
+                    widget.heightScrollThumb,
+                    labelText: labelText,
+                    labelPadding: widget.labelPadding,
+                  ),
                 ),
-                padding: widget.padding,
-                child: widget.scrollThumbBuilder(
-                  widget.backgroundColor,
-                  _thumbAnimation,
-                  _labelAnimation,
-                  widget.heightScrollThumb,
-                  labelText: labelText,
-                  labelPadding: widget.labelPadding,
-                ),
-              ),
-            )),
+              )),
           ],
         ),
       );
