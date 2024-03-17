@@ -60,6 +60,9 @@ class DraggableScrollbar extends StatefulWidget {
 
   final bool enabled;
 
+  final VoidCallback? onScrollBegin;
+  final VoidCallback? onScrollEnd;
+
   DraggableScrollbar({
     Key? key,
     this.alwaysVisibleScrollThumb = false,
@@ -77,6 +80,8 @@ class DraggableScrollbar extends StatefulWidget {
     this.bottomOffset = 0,
     this.labelPadding = const EdgeInsets.only(right: 12.0),
     this.enabled = true,
+    this.onScrollBegin,
+    this.onScrollEnd,
   })  : assert(controller != null),
         assert(scrollThumbBuilder != null),
         super(key: key);
@@ -98,6 +103,8 @@ class DraggableScrollbar extends StatefulWidget {
     this.bottomOffset = 0,
     this.labelPadding = const EdgeInsets.only(right: 12.0),
     this.enabled = true,
+    this.onScrollBegin,
+    this.onScrollEnd,
   })  : scrollThumbBuilder =
             _thumbRRectBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -119,6 +126,8 @@ class DraggableScrollbar extends StatefulWidget {
     this.bottomOffset = 0,
     this.labelPadding = const EdgeInsets.only(right: 12.0),
     this.enabled = true,
+    this.onScrollBegin,
+    this.onScrollEnd,
   })  : scrollThumbBuilder =
             _thumbArrowBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -140,6 +149,8 @@ class DraggableScrollbar extends StatefulWidget {
     this.bottomOffset = 0,
     this.labelPadding = const EdgeInsets.only(right: 12.0),
     this.enabled = true,
+    this.onScrollBegin,
+    this.onScrollEnd,
   })  : scrollThumbBuilder = _thumbSemicircleBuilder(
             heightScrollThumb * 0.6, scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
@@ -350,7 +361,13 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
     _thumbAnimationController = AnimationController(
       vsync: this,
       duration: widget.scrollbarAnimationDuration,
-    );
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.forward) {
+          widget.onScrollBegin?.call();
+        } else if (status == AnimationStatus.reverse) {
+          widget.onScrollEnd?.call();
+        }
+      });
 
     _thumbAnimation = CurvedAnimation(
       parent: _thumbAnimationController,
