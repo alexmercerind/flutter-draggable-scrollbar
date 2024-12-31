@@ -1,11 +1,10 @@
 import 'dart:async';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Build the Scroll Thumb and label using the current configuration
 typedef Widget ScrollThumbBuilder(
   Color backgroundColor,
+  Color foregroundColor,
   Animation<double> thumbAnimation,
   Animation<double> labelAnimation,
   double height, {
@@ -31,6 +30,9 @@ class DraggableScrollbar extends StatefulWidget {
   /// The background color of the label and thumb
   final Color backgroundColor;
 
+  /// The color of the foreground
+  final Color foregroundColor;
+
   /// The amount of padding that should surround the thumb
   final EdgeInsetsGeometry? padding;
 
@@ -53,21 +55,20 @@ class DraggableScrollbar extends StatefulWidget {
   final bool alwaysVisibleScrollThumb;
 
   DraggableScrollbar({
-    Key? key,
-    this.alwaysVisibleScrollThumb = false,
+    super.key,
     required this.heightScrollThumb,
     required this.backgroundColor,
     required this.scrollThumbBuilder,
     required this.child,
     required this.controller,
+    required this.foregroundColor,
+    this.alwaysVisibleScrollThumb = false,
     this.padding,
     this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
     this.labelTextBuilder,
     this.labelConstraints,
-  })  : assert(controller != null),
-        assert(scrollThumbBuilder != null),
-        super(key: key);
+  });
 
   DraggableScrollbar.rrect({
     Key? key,
@@ -77,6 +78,7 @@ class DraggableScrollbar extends StatefulWidget {
     required this.controller,
     this.heightScrollThumb = 48.0,
     this.backgroundColor = Colors.white,
+    this.foregroundColor = Colors.grey,
     this.padding,
     this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
@@ -94,6 +96,7 @@ class DraggableScrollbar extends StatefulWidget {
     required this.controller,
     this.heightScrollThumb = 48.0,
     this.backgroundColor = Colors.white,
+    this.foregroundColor = Colors.grey,
     this.padding,
     this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
@@ -111,6 +114,7 @@ class DraggableScrollbar extends StatefulWidget {
     required this.controller,
     this.heightScrollThumb = 48.0,
     this.backgroundColor = Colors.white,
+    this.foregroundColor = Colors.grey,
     this.padding,
     this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
     this.scrollbarTimeToFade = const Duration(milliseconds: 600),
@@ -160,6 +164,7 @@ class DraggableScrollbar extends StatefulWidget {
       double width, Key? scrollThumbKey, bool alwaysVisibleScrollThumb) {
     return (
       Color backgroundColor,
+      Color foregroundColor,
       Animation<double> thumbAnimation,
       Animation<double> labelAnimation,
       double height, {
@@ -168,7 +173,7 @@ class DraggableScrollbar extends StatefulWidget {
     }) {
       final scrollThumb = CustomPaint(
         key: scrollThumbKey,
-        foregroundPainter: ArrowCustomPainter(Colors.grey),
+        foregroundPainter: ArrowCustomPainter(foregroundColor),
         child: Material(
           elevation: 4.0,
           child: Container(
@@ -200,6 +205,7 @@ class DraggableScrollbar extends StatefulWidget {
       Key? scrollThumbKey, bool alwaysVisibleScrollThumb) {
     return (
       Color backgroundColor,
+      Color foregroundColor,
       Animation<double> thumbAnimation,
       Animation<double> labelAnimation,
       double height, {
@@ -236,6 +242,7 @@ class DraggableScrollbar extends StatefulWidget {
       Key? scrollThumbKey, bool alwaysVisibleScrollThumb) {
     return (
       Color backgroundColor,
+      Color foregroundColor,
       Animation<double> thumbAnimation,
       Animation<double> labelAnimation,
       double height, {
@@ -395,6 +402,7 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
                 padding: widget.padding,
                 child: widget.scrollThumbBuilder(
                   widget.backgroundColor,
+                  widget.foregroundColor,
                   _thumbAnimation,
                   _labelAnimation,
                   widget.heightScrollThumb,
@@ -613,7 +621,8 @@ class SlideFadeTransition extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: animation,
-      builder: (context, child) => animation.value == 0.0 ? Container() : child!,
+      builder: (context, child) =>
+          animation.value == 0.0 ? Container() : child!,
       child: SlideTransition(
         position: Tween(
           begin: Offset(0.3, 0.0),
